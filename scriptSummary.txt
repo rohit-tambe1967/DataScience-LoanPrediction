@@ -1,0 +1,79 @@
+
+#- Filter out the Null value rows. '~' will give opposite result
+
+dfTrain2 = dfTrain2[~np.isnan(dfTrain2.LoanAmount)] 
+
+#-- Filter ot Applicant income > 20000
+dfTrain2 = dfTrain2[:][dfTrain.ApplicantIncome <= 20000]
+dfTrain2 = dfTrain2[:][dfTrain.CoapplicantIncome <= 20000]
+
+#- Since 75% of the Loan terms is 360, set blank loan term to Median value 
+dfTrain2.loc[np.isnan(dfTrain2['Loan_Amount_Term']), ['Loan_Amount_Term']] = dfTrain2['Loan_Amount_Term'].median()
+
+#- Replace NaN Values of Dep. with 0
+dfTrain2.loc[pd.isnull(dfTrain2['Dependents']),['Dependents']] = 0
+
+
+#-There are some non numeric values '3+'.  Replace '3+' values with 3
+dfTrain2['Dependents'] = dfTrain2['Dependents'].apply(
+        lambda x: 3 if x == '3+' else x)
+
+#- Due to '3+' value the data type of Dependents col became char. 
+#- Needs to be converted to Numeric
+
+dfTrain2['Dependents'] = dfTrain2['Dependents'].astype(int)
+
+#- Check the Credit History col for nulls and replace with 0
+dfTrain2.loc[pd.isnull(dfTrain2['Credit_History']),'Credit_History'] = 0
+
+#- Mark Coapplicant income as boolean Flag (Y/N). Create a new col
+dfTrain2['IsCoappIncomeZero'] = dfTrain2['CoapplicantIncome'].apply(
+        lambda x: 'Y' if x <= 0 else 'N')
+
+#- Add a new column for applicant total income
+dfTrain2['appTotalIncome'] = dfTrain2.ApplicantIncome + dfTrain2.CoapplicantIncome
+
+#- Converting Property Area values to numeric values 1 - Urban, 
+#- 2 - SemiUrban, 3- Rural
+
+dfTrain2['nLocale'] = dfTrain2['Property_Area'].apply(
+        lambda x: 1 if x== 'Urban' else 2 if x == 'SemiUrban' else 3)
+
+#- Convert Loan Status to Boolean. Create a new col
+dfTrain2['nLoanStat'] = dfTrain2['Loan_Status'].apply(
+        lambda x: 1 if x== 'Y' else 0)
+
+#- Segregate CoApplicant income = 0 into new DF
+dfTrCoappIncomeN = dfTrain2[:][dfTrain2.IsCoappIncomeZero == 'Y']
+
+#- Segregate CoApplicant income > 0 into new DF
+dfTrCoappIncomeY = dfTrain2[:][dfTrain2.IsCoappIncomeZero == 'N']
+
+#--- Convert Self Employed flag to Boolean... Add a new col
+dfTrain2['nSelfEmp'] = dfTrain2['Self_Employed'].apply(lambda x: 1 if x== 'Yes' else 0 )
+
+
+dfTrCoappIncomeY['nLocale'] = dfTrCoappIncomeY['Property_Area'].apply(
+        lambda x: 1 if x== 'Urban' else 2 if x == 'SemiUrban' else 3)
+dfTrCoappIncomeY
+
+dfTrCoappIncomeN['nLocale'] = dfTrCoappIncomeN['Property_Area'].apply(
+        lambda x: 1 if x== 'Urban' else 2 if x == 'SemiUrban' else 3)
+
+dfTrCoappIncomeY['Dependents'] = dfTrCoappIncomeY['Dependents'].astype(int)
+
+dfTrCoappIncomeN['Dependents'] = dfTrCoappIncomeN['Dependents'].astype(int)
+
+dfTrain2['nLocale'] = dfTrain2['nLocale'].astype(int)
+
+dfTrCoappIncomeY['nLocale'] = dfTrCoappIncomeY['nLocale'].astype(int)
+
+dfTrCoappIncomeN['nLocale'] = dfTrCoappIncomeN['nLocale'].astype(int)
+
+dfTrCoappIncomeY['nSelfEmp'] = dfTrCoappIncomeY['Self_Employed'].apply(
+        lambda x: 1 if x== 'Yes' else 0 )
+
+dfTrCoappIncomeN['nSelfEmp'] = dfTrCoappIncomeN['Self_Employed'].apply(
+        lambda x: 1 if x== 'Yes' else 0 )
+
+
