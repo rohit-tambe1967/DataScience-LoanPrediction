@@ -17,7 +17,7 @@ The TRAIN data is segregated further based on CoApplicant Income (<= 0 or >0) fo
 The regression analysis is carried out on all three datasets - Original TRAIN and (2) segregated datasets.
 The observations of the analysis are noted in the 'Reg.' sheet in 'train_Data.xlsx'.
 
-There is one 'scriptSummary.txt' file which contains connands/statements, extracted from the python script, that are 
+There is one 'scriptSummary.txt' file which contains commands/statements, extracted from the python script, that are 
 executed to carry out the analysis.
 
 PS - All the files may be updated anytime without prior notice. The Python script should not be used as it is as some commands
